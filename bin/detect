@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "Image Optimization Addon"
+exit 0

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#
+# Usage:
+#
+#     $ bin/compile <build-dir> <cache-dir> <env-path>
+
+set -eo pipefail
+
+function topic() {
+  echo "-----> $*"
+}
+
+
+BIN_DIR=$(cd "$(dirname "$0")"; pwd) # absolute path
+ROOT_DIR=$(dirname "$BIN_DIR")
+BUILD_DIR=$1
+CACHE_DIR=$2
+ENV_DIR=$3
+VENDOR_DIR=$ROOT_DIR/vendor
+
+mkdir -p "$BUILD_DIR/.image-optimization"
+
+cp ${VENDOR_DIR}/jpegoptim "$BUILD_DIR/.image-optimization/"
+cp ${VENDOR_DIR}/optipng "$BUILD_DIR/.image-optimization/"
+
+topic "Writing profile script"
+mkdir -p $BUILD_DIR/.profile.d
+cat <<EOF >$BUILD_DIR/.profile.d/000_apt.sh
+export PATH="\$HOME/.image-optimization:\$PATH"
+EOF
+
+export PATH="$BUILD_DIR/.image-optimization/:$PATH"
